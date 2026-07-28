@@ -243,42 +243,55 @@ async def main():
     print(result)
 
 asyncio.run(main())
-Every Task instance exposes helpful control and inspection methods:
----
-MethodDescription
-1.task.done()Returns True if the task is finished, canceled, or raised an exception.
-2.task.result()Returns the return value of the wrapped coroutine.
-3.task.exception()Returns the exception raised by the task (if any).
-4.task.cancel(msg=None)Requests task cancellation on the next event loop iteration.
-5.task.cancelled()Returns True if the task was successfully canceled.
-6.task.set_name("name")Assigns a custom name to the task for easier debugging.
----
-async def cancelable_worker():
-    try:
-        await asyncio.sleep(3600)
-    except asyncio.CancelledError:
-        print("Cleanup work before exiting...")
-        raise # Re-raise to ensure cancellation propagates cleanly
+
+<h2 style="color: #0066cc;">8. Task Object Inspection & Cancellation</h2>
+
+> Every `Task` instance exposes helpful control and inspection methods:
+>
+> | Method | Description |
+> | :--- | :--- |
+> | `task.done()` | Returns `True` if the task is finished, canceled, or raised an exception. |
+> | `task.result()` | Returns the return value of the wrapped coroutine. |
+> | `task.exception()` | Returns the exception raised by the task (if any). |
+> | `task.cancel(msg=None)` | Requests task cancellation on the next event loop iteration. |
+> | `task.cancelled()` | Returns `True` if the task was successfully canceled. |
+> | `task.set_name("name")` | Assigns a custom name to the task for easier debugging. |
+
+> <h3 style="color: #0066cc;">Handling Intercepted Cancellation</h3>
+>
+> ```python
+> async def cancelable_worker():
+>     try:
+>         await asyncio.sleep(3600)
+>     except asyncio.CancelledError:
+>         print("Cleanup work before exiting...")
+>         raise # Re-raise to ensure cancellation propagates cleanly
+> ```
 
 ---
-                          ┌──────────────────────────┐
-                          │   What are you doing?    │
-                          └────────────┬─────────────┘
-                                       │
-      ┌────────────────────────────────┼────────────────────────────────┐
-      ▼                                ▼                                ▼
-┌───────────┐                    ┌───────────┐                    ┌───────────┐
-│ Regular   │                    │ Running   │                    │ Slow /    │
-│  Async    │                    │  Multiple │                    │ Blocking  │
-│  Waiting  │                    │   Tasks   │                    │   Work    │
-└─────┬─────┘                    └─────┬─────┘                    └─────┬─────┘
-      │                                │                                │
-      ▼                                ▼                                ▼
-Use `await`                       Use `TaskGroup`                  Use `to_thread()`
-& `sleep()`                       or `gather()`                    so loop doesn't freeze
----
-Single Async Call: await my_coroutine()
-Multiple Background Tasks (Safe): async with asyncio.TaskGroup() as tg:
-Time Limits: async with asyncio.timeout(seconds):
-Blocking I/O or Legacy Functions: await asyncio.to_thread(blocking_func)
-Yield Control Briefly: await asyncio.sleep(0)
+
+<h2 style="color: #0066cc;">9. Summary Cheat Sheet</h2>
+
+> ```text
+>                           ┌──────────────────────────┐
+>                           │   What are you doing?    │
+>                           └────────────┬─────────────┘
+>                                        │
+>       ┌────────────────────────────────┼────────────────────────────────┐
+>       ▼                                ▼                                ▼
+> ┌───────────┐                    ┌───────────┐                    ┌───────────┐
+> │ Regular   │                    │ Running   │                    │ Slow /    │
+> │  Async    │                    │  Multiple │                    │ Blocking  │
+> │  Waiting  │                    │   Tasks   │                    │   Work    │
+> └─────┬─────┘                    └─────┬─────┘                    └─────┬─────┘
+>       │                                │                                │
+>       ▼                                ▼                                ▼
+> Use `await`                       Use `TaskGroup`                  Use `to_thread()`
+> & `sleep()`                       or `gather()`                    so loop doesn't freeze
+> ```
+>
+> * **Single Async Call:** `await my_coroutine()`
+> * **Multiple Background Tasks (Safe):** `async with asyncio.TaskGroup() as tg:`
+> * **Time Limits:** `async with asyncio.timeout(seconds):`
+> * **Blocking I/O or Legacy Functions:** `await asyncio.to_thread(blocking_func)`
+> * **Yield Control Briefly:** `await asyncio.sleep(0)`
