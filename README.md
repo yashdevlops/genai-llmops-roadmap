@@ -244,7 +244,11 @@ async def main():
 
 asyncio.run(main())
 
-<h2 style="color: #0066cc;">8. Task Object Inspection & Cancellation</h2>
+```
+
+---
+
+<h2 style="color: #0066cc;"> 8. Task Object Inspection & Cancellation</h2>
 
 > Every `Task` instance exposes helpful control and inspection methods:
 >
@@ -257,7 +261,7 @@ asyncio.run(main())
 > | `task.cancelled()` | Returns `True` if the task was successfully canceled. |
 > | `task.set_name("name")` | Assigns a custom name to the task for easier debugging. |
 
-> <h3 style="color: #0066cc;">Handling Intercepted Cancellation</h3>
+<h3 style="color: #0066cc;">Handling Intercepted Cancellation</h3>
 >
 > ```python
 > async def cancelable_worker():
@@ -266,7 +270,7 @@ asyncio.run(main())
 >     except asyncio.CancelledError:
 >         print("Cleanup work before exiting...")
 >         raise # Re-raise to ensure cancellation propagates cleanly
-> ```
+```
 
 ---
 
