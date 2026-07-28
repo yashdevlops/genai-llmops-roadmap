@@ -244,6 +244,7 @@ async def main():
 
 asyncio.run(main())
 Every Task instance exposes helpful control and inspection methods:
+---
 MethodDescription
 1.task.done()Returns True if the task is finished, canceled, or raised an exception.
 2.task.result()Returns the return value of the wrapped coroutine.
@@ -251,12 +252,15 @@ MethodDescription
 4.task.cancel(msg=None)Requests task cancellation on the next event loop iteration.
 5.task.cancelled()Returns True if the task was successfully canceled.
 6.task.set_name("name")Assigns a custom name to the task for easier debugging.
+---
 async def cancelable_worker():
     try:
         await asyncio.sleep(3600)
     except asyncio.CancelledError:
         print("Cleanup work before exiting...")
         raise # Re-raise to ensure cancellation propagates cleanly
+
+---
                           ┌──────────────────────────┐
                           │   What are you doing?    │
                           └────────────┬─────────────┘
@@ -272,6 +276,7 @@ async def cancelable_worker():
       ▼                                ▼                                ▼
 Use `await`                       Use `TaskGroup`                  Use `to_thread()`
 & `sleep()`                       or `gather()`                    so loop doesn't freeze
+---
 Single Async Call: await my_coroutine()
 Multiple Background Tasks (Safe): async with asyncio.TaskGroup() as tg:
 Time Limits: async with asyncio.timeout(seconds):
